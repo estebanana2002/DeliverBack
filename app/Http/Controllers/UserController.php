@@ -12,7 +12,6 @@ class UserController extends Controller
     public function registerUser ( Request $request ) {
         try {
             //code...
-            // $data = $request->all();
             $validators = Validator::make($request -> all(),
             [
                 'name' =>'required|string|max_length:40',
