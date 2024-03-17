@@ -68,12 +68,12 @@ class UserController extends Controller
             if ( !Auth::attemp($request -> only('email', 'password')) ) {
                 return response() -> json(['message' => 'Unauthorized'], 401);
             }
-            $user = User::where('email', $request['email']) 
+            $user = User::where('email', $request['email'])
             -> addSelect(['role' => role::select('role') -> whereColumn('role_id', 'id')]) -> firstOfFail();
 
             $token = JWTAuth::fromUser($user);
             Log::info('token generado'. $token);
-            
+
             return response() -> json([
                 'message' => 'Success',
                 'user' => $user,
@@ -86,4 +86,6 @@ class UserController extends Controller
             $th -> getMessage()], 400);
         };
     }
+
+    
 }
