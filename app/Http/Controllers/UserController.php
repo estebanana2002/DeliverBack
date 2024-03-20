@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
 use App\Models\role;
 use App\Models\User;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
@@ -87,6 +88,13 @@ class UserController extends Controller
             return response() -> json(['message' => 'algo salio mal!',
             $th -> getMessage()], 400);
         };
+    }
+
+    public function logout() {
+        $user = Auth::user();
+        $user_token = $user -> tokens();
+        $user_token -> delete();
+        return response() -> json(['message' => 'Logged out']);
     }
 
     protected function respondWithToken($token)
