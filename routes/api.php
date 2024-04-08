@@ -24,6 +24,21 @@ use App\Http\Controllers\UserController;
  * * Modificamos el auth de la carpeta config
  */
 
+
+ /**
+  * * LARAVEL WEBSOCKET - BEYOND
+  * * Al chile I want to do a websocket api with laravel beyond a ver que pedo
+  * * https://beyondco.de/docs/laravel-websockets/getting-started/installation
+  */
+  /**
+   * TODO 1~ composer require beyondcode/laravel-websockets --with-all-dependencies
+   * TODO 2~ php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
+   * TODO 3~ Migramos de nuez
+   *
+   * * Publica la configuracion del websocket en config/websocket
+   * TODO 4~ php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
+   */
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
