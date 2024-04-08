@@ -108,5 +108,4 @@ class UserController extends Controller
             'expiration_date' => now()->addSeconds($expiration)->toDateTimeString(),
         ]);
     }
-
 }
