@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,8 +49,23 @@ Route::group([
     'middlewware' => 'api',
     'prefix' => 'auth',
 ], function ($router) {
-    Route::post('login', [UserController::class, 'login']);
-    Route::post('logout', [UserController::class, 'logout']);
-    Route::post('register', [UserController::class, 'registerUser']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('register', [AuthController::class, 'registerUser']);
+});
+
+Route::group([
+    'middlewware' => 'api',
+    'prefix' => 'users',
+], function ($router) {
+    Route::get('getUsers', [UserController::class, 'getAllUsers']);
+    Route::post('registerUser', [UserController::class, 'registerNewUser']);
+});
+
+Route::group([
+    'middlewware' => 'api',
+    'prefix' => 'roles',
+], function ($router) {
+    Route::get('getRoles', [RoleController::class, 'getAllRoles']);
 });
 
