@@ -28,7 +28,8 @@ class AuthController extends Controller
             }
             $user = User::where('email', $request['email'])
             -> addSelect(['role' => role::select('role') -> whereColumn('role_id', 'id')]) -> firstOrFail();
-
+            $user -> load('role');
+            
             $token = JWTAuth::fromUser($user);
             Log::info('token generado'. $token);
 

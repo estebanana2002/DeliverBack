@@ -59,7 +59,10 @@ Route::group([
     'prefix' => 'users',
 ], function ($router) {
     Route::get('getUsers', [UserController::class, 'getAllUsers']);
+    Route::get('getUserById/{id}', [UserController::class, 'getById']);
     Route::post('registerUser', [UserController::class, 'registerNewUser']);
+    Route::patch('updateUser', [UserController::class, 'editUser']);
+    Route::delete('deleteUser/{id}', [UserController::class, 'deleteUser']);
 });
 
 Route::group([

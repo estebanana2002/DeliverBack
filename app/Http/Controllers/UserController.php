@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Validation\ValidationException;
 
 use App\Models\User;
 
@@ -15,12 +12,20 @@ class UserController extends Controller
 {
     public function __construct() {
         // pa dejar pasar al usuario sin haber iniciado sesion, no le valida el token en la funcion login
-        $this -> middleware('users:api', ['except' => ['getAllUsers', 'registerNewUser']]);
+        $this -> middleware('users:api', ['except' => ['getAllUsers', 'getById', 'registerNewUser', 'editUser', 'deleteUser']]);
     }
 
     public function getAllUsers() {
         $users = User::with('role') -> get();
         return response() -> json($users, 200);
+    }
+
+    public function getById( int $id ) {
+        $user = User::find($id);
+        if ( is_null($user) ) {
+            return response() -> json('User not found', 404);
+        }
+        return response() -> json($user, 200);
     }
 
     public function registerNewUser( Request $request ) {
@@ -33,18 +38,17 @@ class UserController extends Controller
                 'matricula' => ['required', 'string', 'unique:'.User::class],
                 'email' => ['required', 'email', 'unique:'.User::class],
                 'password' => ['required', 'string'],
-                // 'password' => ['required', 'regex: /^(?=.*[A-Z])(?!(\d)\1|\d{2})(?=.*\d.*\d)(?!.*(\d)\2)[A-Za-z\d]{5,}$/'],
                 'role_id' => ['required', 'integer'],
             ], [
-                'name.required' => 'El campo nombre es requerido',
-                'username.required' => 'El campo usuario es requerido',
-                'username.unique' => 'ya hay un username registrado',
-                'matricula.required' => 'El campo matricula es requerido',
+                'name.required' => 'El nombre es requerido',
+                'username.required' => 'El username es requerido',
+                'username.unique' => 'Este username ya fue registrado',
+                'matricula.required' => 'La matricula es requerida',
                 'matricula.unique' => 'Esta matricula ya fue registrada',
-                'email.required' => 'El campo email es requerido',
+                'email.required' => 'El correo es requerido',
                 'email.unique' => 'Este correo ya fue registrado',
-                'password.required' => 'El campo password es requerido',
-                'role_id.required' => 'El campo role_id es requerido',
+                'password.required' => 'La contraseña es requerida',
+                'role_id.required' => 'El rol es requerido',
             ]);
 
             $user = User::create([
@@ -61,14 +65,44 @@ class UserController extends Controller
             return response() -> json($user, 201);
 
         } catch (\Exception $th) {
-            //throw $th;
+            $errors = [];
+            if ($th instanceof ValidationException) {
+                $errors = $th -> errors();
+            }
             return response() -> json([
                 'message' => 'Error al crear el usuario!',
-                $th -> getMessage()
-        ], 400);
+                'errors' => $errors
+            ], 400);
         }
     }
 
+    public function editUser( Request $request ) {
+        $user = User::find($request -> id);
+        if ( is_null($user) ) {
+            return response() -> json('User not found', 404);
+        }
 
+        $user -> update([
+            'name' => $request -> name,
+            'username' => $request -> username,
+            'email' => $request -> email,
+            'role_id' => $request -> role_id,
+            'matricula' => $request -> matricula,
+        ]);
+
+        $user -> load('role');
+        return response() -> json($user, 200);
+    }
+
+    public function deleteUser(int $id) {
+        $user = User::find($id);
+        if ( is_null($user) ) {
+            return response() -> json('User not found', 404);
+        }
+
+        $user -> delete();
+
+        return response() -> json('User deleted', 200);
+    }
 
 }
